@@ -1,0 +1,89 @@
+﻿@page "/clientes"
+@using CurrieTechnologies.Razor.SweetAlert2
+
+@inject IClienteService ClientesService
+@inject SweetAlertService SweetAlert
+
+<PageTitle>Clientes</PageTitle>
+<h1>Clientes</h1>
+
+@if (clients == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else if (clients.Count == 0)
+{
+    <p>No hay clientes disponibles.</p>
+}
+else
+{
+    <NavLink class="nav-link" href="nuevocliente">
+        Nuevo Cliente
+    </NavLink>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Dirección</th>
+                <th>Email</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var client in clients)
+            {
+                <tr>
+                    <td>@client.Id</td>
+                    <td>@client.Nombre</td>
+                    <td>@client.Telefono</td>
+                    <td>@client.Direccion</td>
+                    <td>@client.Email</td>
+                    <td>
+                        <NavLink class="nav-link" href=@($"/editarcliente/{client.Id}")>
+                            Editar
+                        </NavLink>
+                        <button title="Eliminar" class="btn btn-danger" @onclick="@(() => Eliminar(client))">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Cliente>? clients;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarClientes();
+    }
+
+    private async Task CargarClientes()
+    {
+        clients = await ClientesService.Get();
+    }
+
+    private async Task Eliminar(Cliente client)
+    {
+        SweetAlertResult respuesta = await SweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = "Borrando Cliente",
+            Text = $"¿Está seguro que desea borrar al cliente {client.Nombre}?",
+            Icon = SweetAlertIcon.Warning,
+            ShowCancelButton = true,
+            ConfirmButtonText = "Sí, quiero borrarlo!",
+            CancelButtonText = "No, espera"
+        });
+
+        if (respuesta.IsConfirmed)
+        {
+            await ClientesService.Delete(client.Id);
+            await CargarClientes(); // Recarga la lista después de eliminar
+            StateHasChanged();
+        }
+    }
+}

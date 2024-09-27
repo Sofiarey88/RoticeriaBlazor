@@ -1,0 +1,36 @@
+﻿@page "/nuevoproducto"
+@using RoticeriaBlazor.Modelos
+@using RoticeriaBlazor.Services
+@inject IProductoService ProductoService
+@inject NavigationManager NavigationManager
+
+
+
+<h3>Agregar Nuevo Producto</h3>
+
+<EditForm Model="producto" OnValidSubmit="GuardarProducto">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label class="form-label">Nombre</label>
+    <InputText class="form-control" @bind-Value="producto.Nombre" required />
+
+    <label class="form-label">Descripción</label>
+    <InputTextArea class="form-control" @bind-Value="producto.Descripcion" required />
+
+    <label class="form-label">Precio</label>
+    <InputNumber class="form-control" @bind-Value="producto.Precio" required />
+
+    <button type="submit" class="btn btn-primary">Agregar Producto</button>
+    <NavLink class="btn btn-secondary" href="/productos">Cancelar</NavLink>
+</EditForm>
+
+@code {
+    private Producto producto = new Producto();
+
+    private async Task GuardarProducto()
+    {
+        await ProductoService.Add(producto);
+        NavigationManager.NavigateTo("/productos");
+    }
+}

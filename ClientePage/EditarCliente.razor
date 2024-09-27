@@ -1,0 +1,83 @@
+﻿@page "/editarcliente/{idCliente:int}"
+@using RoticeriaBlazor.Interfaces
+@using RoticeriaBlazor.Modelos
+@inject IGenericService<Cliente> ClienteService
+@inject NavigationManager NavigationManager
+
+@if (cliente == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <h3>Editando un cliente</h3>
+    <EditForm Model="cliente" OnValidSubmit="GuardarCliente">
+        <DataAnnotationsValidator />
+        <label class="form-label mb-2">Cliente</label>
+        <InputText class="form-control" @bind-Value="cliente.Nombre" />
+
+        <label class="form-label mb-2">Teléfono</label>
+        <InputText class="form-control" @bind-Value="cliente.Telefono" />
+
+        <label class="form-label mb-2">Dirección</label>
+        <InputText class="form-control" @bind-Value="cliente.Direccion" />
+
+        <label class="form-label mb-2">Email</label>
+        <InputText class="form-control" @bind-Value="cliente.Email" />
+
+        <button type="submit" class="btn btn-primary">Guardar Cliente</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int idCliente { get; set; }
+
+    public Cliente? cliente { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Console.WriteLine($"ID Cliente recibido: {idCliente}");
+
+            if (idCliente <= 0)
+            {
+                Console.Error.WriteLine("ID Cliente no válido.");
+                NavigationManager.NavigateTo("/clientes"); // Redireccionar si el ID no es válido.
+                return;
+            }
+
+            cliente = await ClienteService.GetByIdAsync(idCliente);
+
+            if (cliente == null)
+            {
+                Console.Error.WriteLine($"Cliente con ID {idCliente} no encontrado.");
+                NavigationManager.NavigateTo("/clientes"); // Redireccionar si no se encuentra el cliente.
+            }
+            else
+            {
+                Console.WriteLine($"Cliente cargado: {cliente.Nombre}");
+            }
+        }
+        catch (ApplicationException ex)
+        {
+            Console.Error.WriteLine($"Error al cargar el cliente: {ex.Message}");
+        }
+    }
+
+    private async Task GuardarCliente()
+    {
+        try
+        {
+            Console.WriteLine($"Guardando cliente: {cliente.Nombre}");
+            await ClienteService.UpdateAsync(cliente);
+            Console.WriteLine("Cliente guardado con éxito.");
+            NavigationManager.NavigateTo("/clientes");
+        }
+        catch (ApplicationException ex)
+        {
+            Console.Error.WriteLine($"Error al guardar el cliente: {ex.Message}");
+        }
+    }
+}

@@ -1,0 +1,43 @@
+﻿@page "/nuevocliente"
+@using RoticeriaBlazor.Interfaces
+@using RoticeriaBlazor.Modelos
+@inject IClienteService ClienteService // Cambia a IClienteService para que coincida con tu servicio
+@inject NavigationManager NavigationManager
+
+<h3>Nuevo Cliente</h3>
+<EditForm Model="cliente" OnValidSubmit="AgregarCliente">
+    <DataAnnotationsValidator />
+    <label class="form-label mb-2">Nombre</label>
+    <InputText class="form-control" @bind-Value="cliente.Nombre" />
+    <label class="form-label mb-2">Teléfono</label>
+    <InputText class="form-control" @bind-Value="cliente.Telefono" />
+    <label class="form-label mb-2">Dirección</label>
+    <InputText class="form-control" @bind-Value="cliente.Direccion" />
+    <label class="form-label mb-2">Email</label>
+    <InputText class="form-control" @bind-Value="cliente.Email" />
+    <button type="submit" class="btn btn-primary">Agregar Cliente</button>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger mt-2">@errorMessage</div>
+}
+
+@code {
+    public Cliente cliente { get; set; } = new Cliente(); // Inicializa el nuevo cliente
+    private string? errorMessage;
+
+    private async Task AgregarCliente()
+    {
+        try
+        {
+            await ClienteService.Add(cliente); // Llama al método Add
+            NavigationManager.NavigateTo("/clientes"); // Redirige después de agregar
+        }
+        catch (ApplicationException ex)
+        {
+            errorMessage = ex.Message; // Guarda el mensaje de error
+            Console.WriteLine($"Error al agregar cliente: {ex.Message}"); // Imprime el error en la consola
+        }
+    }
+}

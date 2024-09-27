@@ -1,0 +1,55 @@
+﻿@page "/editarproducto"
+@using RoticeriaBlazor.Modelos
+@using RoticeriaBlazor.Services
+@inject IProductoService ProductoService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Editar Producto</PageTitle>
+
+@if (producto == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <h3>Editar Producto</h3>
+
+    <EditForm Model="producto" OnValidSubmit="GuardarProducto">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <label class="form-label">Nombre</label>
+        <InputText class="form-control" @bind-Value="producto.Nombre" required />
+
+        <label class="form-label">Descripción</label>
+        <InputTextArea class="form-control" @bind-Value="producto.Descripcion" required />
+
+        <label class="form-label">Precio</label>
+        <InputNumber class="form-control" @bind-Value="producto.Precio" required />
+
+        <button type="submit" class="btn btn-primary">Actualizar Producto</button>
+        <NavLink class="btn btn-secondary" href="/productos">Cancelar</NavLink>
+    </EditForm>
+}
+
+@code {
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public int id { get; set; }
+
+    private Producto? producto;
+
+    protected override async Task OnInitializedAsync()
+    {
+        producto = await ProductoService.GetById(id);
+    }
+
+    private async Task GuardarProducto()
+    {
+        if (producto != null)
+        {
+            await ProductoService.Update(producto);
+            NavigationManager.NavigateTo("/productos");
+        }
+    }
+}

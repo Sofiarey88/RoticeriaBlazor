@@ -1,0 +1,73 @@
+﻿@page "/productos"
+@using RoticeriaBlazor.Modelos
+@using RoticeriaBlazor.Services
+@inject IProductoService ProductoService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Productos</PageTitle>
+
+<ComponenteTitulo Titulo="Productos"/>
+
+<p>Lista de productos disponibles en el sitio web.</p>
+
+@if (productos == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <NavLink class="nav-link" href="nuevoproducto">
+        Nuevo Producto
+    </NavLink>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var producto in productos)
+            {
+                <tr>
+                    <td>@producto.Nombre</td>
+                    <td>@producto.Descripcion</td>
+                    <td>@producto.Precio.ToString("C")</td>
+                    <td>
+                        <NavLink class="nav-link" href=@($"editarproducto?id={producto.Id}")>
+                            Editar
+                        </NavLink>
+                       
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Producto>? productos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarProductos();
+    }
+
+    private async Task CargarProductos()
+    {
+        try
+        {
+            productos = await ProductoService.Get();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching productos: {ex.Message}");
+            productos = new List<Producto>(); // Mostrar lista vacía en caso de error
+        }
+    }
+
+  
+}
+

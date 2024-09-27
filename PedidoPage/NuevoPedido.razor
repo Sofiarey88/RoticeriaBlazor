@@ -1,0 +1,89 @@
+﻿@page "/nuevopedido"
+@using RoticeriaBlazor.Modelos
+@using RoticeriaBlazor.Services
+@inject IPedidoService PedidoService
+@inject IClienteService ClienteService
+@inject NavigationManager Navigation
+
+<PageTitle>Nuevo Pedido</PageTitle>
+
+<ComponenteTitulo Titulo="Nuevo Pedido"/>
+
+<p>Complete los datos para crear un nuevo pedido.</p>
+
+@if (clientes == null)
+{
+    <p><em>Cargando clientes...</em></p>
+}
+else
+{
+    <EditForm Model="pedido" OnValidSubmit="GuardarPedido">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label for="Fecha" class="form-label">Fecha</label>
+            <InputDate id="Fecha" class="form-control" @bind-Value="pedido.Fecha" />
+        </div>
+
+        <div class="mb-3">
+            <label for="Estado" class="form-label">Estado</label>
+            <InputText id="Estado" class="form-control" @bind-Value="pedido.Estado" />
+        </div>
+
+        <div class="mb-3">
+            <label for="ClienteId" class="form-label">Cliente</label>
+            <InputSelect id="ClienteId" class="form-control" @bind-Value="pedido.ClienteId">
+                <option value="">Seleccione un cliente</option>
+                @foreach (var cliente in clientes)
+                {
+                    <option value="@cliente.Id">@cliente.Nombre</option>
+                }
+            </InputSelect>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar Pedido</button>
+    </EditForm>
+
+    <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+}
+
+@code {
+    private Pedido pedido = new Pedido
+    {
+        Fecha = DateTime.Now,
+        Estado = string.Empty
+    };
+    private List<Cliente>? clientes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            clientes = await ClienteService.Get(); // Cargar la lista de clientes
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching clientes: {ex.Message}");
+        }
+    }
+
+    private async Task GuardarPedido()
+    {
+        try
+        {
+            await PedidoService.Add(pedido); // Guardar el nuevo pedido
+            Navigation.NavigateTo("/pedidos"); // Redirigir a la lista de pedidos
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating pedido: {ex.Message}");
+        }
+    }
+
+    private void Cancelar()
+    {
+        Navigation.NavigateTo("/pedidos");
+    }
+}
+

@@ -1,0 +1,51 @@
+﻿@page "/proveedores"
+@using RoticeriaBlazor.Interfaces
+@using RoticeriaBlazor.Modelos;
+
+
+@inject IProveedorService proveedorService
+
+<h3>Lista de Proveedores</h3>
+
+@if (proveedores == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Contacto</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var proveedor in proveedores )
+            {
+                <tr>
+                    <td>@proveedor.Nombre</td>
+                    <td>@proveedor.Contacto</td>
+                    <td>@proveedor.Telefono</td>
+                    <td>@proveedor.Email</td>
+                   
+                   
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+   private List<Proveedor>? proveedores;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        proveedores = await proveedorService.Get();
+
+    }
+}

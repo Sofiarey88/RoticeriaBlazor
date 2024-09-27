@@ -1,0 +1,68 @@
+﻿@page "/editarproveedor/{idProveedor:int}"
+@using RoticeriaBlazor.Interfaces
+@using RoticeriaBlazor.Modelos
+@inject IGenericService<Proveedor> ProveedorService
+@inject NavigationManager NavigationManager
+
+<h3>Editando Proveedor</h3>
+
+@if (proveedor == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <EditForm Model="proveedor" OnValidSubmit="GuardarProveedor">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <InputText class="form-control" @bind-Value="proveedor.Nombre" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Contacto</label>
+            <InputText class="form-control" @bind-Value="proveedor.Contacto" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Teléfono</label>
+            <InputText class="form-control" @bind-Value="proveedor.Telefono" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <InputText class="form-control" @bind-Value="proveedor.Email" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <button type="button" class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int idProveedor { get; set; }
+
+    public Proveedor? proveedor { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        proveedor = await ProveedorService.GetByIdAsync(idProveedor);
+    }
+
+    private async Task GuardarProveedor()
+    {
+        if (proveedor != null)
+        {
+            await ProveedorService.UpdateAsync(proveedor);
+            NavigationManager.NavigateTo("/proveedores");
+        }
+    }
+
+    private void Cancelar()
+    {
+        NavigationManager.NavigateTo("/proveedores");
+    }
+}

@@ -1,0 +1,48 @@
+﻿@page "/editarpedido"
+@using RoticeriaBlazor.Interfaces
+@using RoticeriaBlazor.Modelos
+@inject IGenericService<Pedido> PedidoService
+@inject NavigationManager NavigationManager
+
+@if (pedido == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <h3>Editando un pedido</h3>
+    <EditForm Model="pedido" OnValidSubmit="GuardarPedido">
+
+        <DataAnnotationsValidator />
+
+        <label class="form-label mb-2">Cliente ID</label>
+        <InputNumber class="form-control" @bind-Value="pedido.ClienteId" />
+
+        <label class="form-label mb-2">Fecha</label>
+        <InputDate class="form-control" @bind-Value="pedido.Fecha" />
+
+        <label class="form-label mb-2">Estado</label>
+        <InputText class="form-control" @bind-Value="pedido.Estado" />
+
+        <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+    </EditForm>
+}
+
+@code {
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public int idPedido { get; set; }
+
+    public Pedido? pedido { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        pedido = await PedidoService.GetByIdAsync(idPedido);
+    }
+
+    private async Task GuardarPedido()
+    {
+        await PedidoService.UpdateAsync(pedido);
+        NavigationManager.NavigateTo("/pedidos");
+    }
+}

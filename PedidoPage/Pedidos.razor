@@ -1,0 +1,65 @@
+﻿@page "/pedidos"
+@using RoticeriaBlazor.Modelos
+@using RoticeriaBlazor.Services
+@inject IPedidoService PedidoService
+
+<PageTitle>Pedidos</PageTitle>
+
+<ComponenteTitulo Titulo="Pedidos"/>
+
+<p>Lista de pedidos realizados en el sitio web.</p>
+
+@if (pedidos == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <NavLink class="nav-link" href="nuevopedido">
+        Nuevo Pedido
+    </NavLink>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Cliente</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pedido in pedidos)
+            {
+                <tr>
+                    <td>@pedido.Fecha.ToString("dd/MM/yyyy")</td>
+                    <td>@pedido.Estado</td>
+                    <td>@pedido.Cliente.Nombre</td>
+                    <td>
+                        <NavLink class="nav-link" href=@($"editarpedido?idPedido={pedido.Id}")>
+                            Editar
+                        </NavLink>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <Pedidos />
+}
+
+@code {
+    private List<Pedido>? pedidos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            pedidos = await PedidoService.Get();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching pedidos: {ex.Message}");
+            pedidos = new List<Pedido>(); // Mostrar una lista vacía en caso de error
+        }
+    }
+}
+
