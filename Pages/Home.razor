@@ -1,7 +1,41 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<div class="container-fluid">
+    <div class="background-image">
+        <div class="text-overlay">
+            <h1 class="display-3">Bienvenido a Nuestra Rotisería</h1>
+            <p class="lead">Disfruta de las mejores delicias caseras.</p>
+        </div>
+    </div>
+</div>
 
-<h1>Hello, world!</h1>
+<style>
+    .background-image {
+        background-image: url('https://i.pinimg.com/control/564x/85/4b/3f/854b3fcd1287e7a9d6e393d6b0c56301.jpg');
+        background-size: contain; /* Cambia a 'contain' para que la imagen se ajuste dentro del contenedor */
+        background-repeat: no-repeat; /* Evita que la imagen se repita */
+        background-position: center; /* Centra la imagen */
+        height: 100vh; /* Ajusta la altura según tus necesidades */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        color: white; /* Cambia el color del texto */
+    }
 
-Welcome to your new app.
+    .text-overlay {
+        text-align: center;
+        backdrop-filter: blur(5px); /* Opcional: aplica un desenfoque al fondo del texto */
+        padding: 20px; /* Espaciado alrededor del texto */
+        background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semi-transparente para mejorar la legibilidad */
+    }
+
+    h1 {
+        font-size: 4rem; /* Tamaño del título */
+        font-weight: bold; /* Negrita para el título */
+    }
+
+    p {
+        font-size: 1.5rem; /* Tamaño del subtítulo */
+    }
+</style>
