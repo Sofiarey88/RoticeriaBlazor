@@ -52,7 +52,7 @@ else
     private Pedido pedido = new Pedido
     {
         Fecha = DateTime.Now,
-        Estado = string.Empty
+        Estado = "Pendiente"
     };
     private List<Cliente>? clientes;
 
@@ -70,6 +70,14 @@ else
 
     private async Task GuardarPedido()
     {
+        if (pedido.ClienteId == 0)
+        {
+            Console.WriteLine("Debe seleccionar un cliente.");
+            return;
+        }
+
+        Console.WriteLine($"Fecha: {pedido.Fecha}, Estado: {pedido.Estado}, ClienteId: {pedido.ClienteId}");
+
         try
         {
             await PedidoService.Add(pedido); // Guardar el nuevo pedido
@@ -86,4 +94,3 @@ else
         Navigation.NavigateTo("/pedidos");
     }
 }
-

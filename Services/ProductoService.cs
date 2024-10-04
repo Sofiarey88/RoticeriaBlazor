@@ -16,31 +16,36 @@ namespace RoticeriaBlazor.Services
 
         public async Task<List<Producto>?> Get()
         {
-            var response = await client.GetAsync("apiproductos");
+            var response = await client.GetAsync("https://roticeriaback.azurewebsites.net/api/productos"); // Actualiza aquí
+            response.EnsureSuccessStatusCode(); // Asegúrate de que la respuesta sea exitosa
             return await JsonSerializer.DeserializeAsync<List<Producto>>(await response.Content.ReadAsStreamAsync(), options);
         }
 
         public async Task<Producto?> GetById(int id)
         {
-            var response = await client.GetAsync($"apiproductos/{id}");
+            var response = await client.GetAsync($"https://roticeriaback.azurewebsites.net/api/productos/{id}"); // Actualiza aquí
+            response.EnsureSuccessStatusCode(); // Asegúrate de que la respuesta sea exitosa
             return await JsonSerializer.DeserializeAsync<Producto>(await response.Content.ReadAsStreamAsync(), options);
         }
 
         public async Task Add(Producto producto)
         {
             var content = new StringContent(JsonSerializer.Serialize(producto), System.Text.Encoding.UTF8, "application/json");
-            await client.PostAsync("apiproductos", content);
+            var response = await client.PostAsync("https://roticeriaback.azurewebsites.net/api/productos", content); // Actualiza aquí
+            response.EnsureSuccessStatusCode(); // Asegúrate de que la respuesta sea exitosa
         }
 
         public async Task Update(Producto producto)
         {
             var content = new StringContent(JsonSerializer.Serialize(producto), System.Text.Encoding.UTF8, "application/json");
-            await client.PutAsync($"apiproductos/{producto.Id}", content);
+            var response = await client.PutAsync($"https://roticeriaback.azurewebsites.net/api/productos/{producto.Id}", content); // Actualiza aquí
+            response.EnsureSuccessStatusCode(); // Asegúrate de que la respuesta sea exitosa
         }
 
         public async Task Delete(int id)
         {
-            await client.DeleteAsync($"apiproductos/{id}");
+            var response = await client.DeleteAsync($"https://roticeriaback.azurewebsites.net/api/productos/{id}"); // Actualiza aquí
+            response.EnsureSuccessStatusCode(); // Asegúrate de que la respuesta sea exitosa
         }
     }
 
@@ -53,4 +58,3 @@ namespace RoticeriaBlazor.Services
         Task Delete(int id);
     }
 }
-

@@ -44,7 +44,7 @@ else
                         <NavLink class="nav-link" href=@($"/editarcliente/{client.Id}")>
                             Editar
                         </NavLink>
-                        <button title="Eliminar" class="btn btn-danger" @onclick="@(() => Eliminar(client))">
+                        <button title="Eliminar" class="btn btn-danger" @onclick="@(() => ConfirmarEliminar(client))">
                             Eliminar
                         </button>
                     </td>
@@ -54,8 +54,18 @@ else
     </table>
 }
 
+@if (clienteAEliminar != null)
+{
+    <div class="alert alert-warning">
+        <strong>Advertencia:</strong> ¿Está seguro que desea eliminar al cliente @clienteAEliminar.Nombre?
+        <button class="btn btn-danger" @onclick="EliminarCliente">Sí, Eliminar</button>
+        <button class="btn btn-secondary" @onclick="CancelarEliminar">Cancelar</button>
+    </div>
+}
+
 @code {
     private List<Cliente>? clients;
+    private Cliente? clienteAEliminar;
 
     protected override async Task OnInitializedAsync()
     {
@@ -67,23 +77,31 @@ else
         clients = await ClientesService.Get();
     }
 
-    private async Task Eliminar(Cliente client)
+    private void ConfirmarEliminar(Cliente client)
     {
-        SweetAlertResult respuesta = await SweetAlert.FireAsync(new SweetAlertOptions
-        {
-            Title = "Borrando Cliente",
-            Text = $"¿Está seguro que desea borrar al cliente {client.Nombre}?",
-            Icon = SweetAlertIcon.Warning,
-            ShowCancelButton = true,
-            ConfirmButtonText = "Sí, quiero borrarlo!",
-            CancelButtonText = "No, espera"
-        });
+        clienteAEliminar = client; // Almacenar el cliente a eliminar
+    }
 
-        if (respuesta.IsConfirmed)
+    private async Task EliminarCliente()
+    {
+        if (clienteAEliminar != null)
         {
-            await ClientesService.Delete(client.Id);
-            await CargarClientes(); // Recarga la lista después de eliminar
-            StateHasChanged();
+            try
+            {
+                await ClientesService.Delete(clienteAEliminar.Id); // Elimina el cliente
+                await CargarClientes(); // Recarga la lista después de eliminar
+                clienteAEliminar = null; // Limpiar la selección
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al eliminar el cliente: {ex.Message}");
+                // Puedes agregar un mensaje de error aquí para notificar al usuario
+            }
         }
+    }
+
+    private void CancelarEliminar()
+    {
+        clienteAEliminar = null; // Cancelar la eliminación
     }
 }

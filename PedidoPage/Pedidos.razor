@@ -13,6 +13,10 @@
 {
     <p><em>Cargando...</em></p>
 }
+else if (!pedidos.Any())
+{
+    <p><em>No hay pedidos disponibles.</em></p>
+}
 else
 {
     <NavLink class="nav-link" href="nuevopedido">
@@ -33,7 +37,7 @@ else
                 <tr>
                     <td>@pedido.Fecha.ToString("dd/MM/yyyy")</td>
                     <td>@pedido.Estado</td>
-                    <td>@pedido.Cliente.Nombre</td>
+                    <td>@pedido.Cliente?.Nombre ?? "Cliente no disponible"</td>
                     <td>
                         <NavLink class="nav-link" href=@($"editarpedido?idPedido={pedido.Id}")>
                             Editar
@@ -43,13 +47,17 @@ else
             }
         </tbody>
     </table>
-    <Pedidos />
 }
 
 @code {
     private List<Pedido>? pedidos;
 
     protected override async Task OnInitializedAsync()
+    {
+        await CargarPedidos();
+    }
+
+    private async Task CargarPedidos()
     {
         try
         {
@@ -58,8 +66,7 @@ else
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching pedidos: {ex.Message}");
-            pedidos = new List<Pedido>(); // Mostrar una lista vacía en caso de error
+            pedidos = new List<Pedido>(); // Asegúrate de que no sea null
         }
     }
 }
-
